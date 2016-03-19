@@ -7,18 +7,18 @@
 
 // We set the push delay
 // (delay between the high and low signal to simulate a push button action).
-int PUSH_BTN_DELAY = 100;
+int PUSH_BTN_DELAY = 500;
 // Wired to the Senseo Power push button. 
-int PIN_POWER = 1;
+int PIN_POWER = 2;
 // Wired to the Senseo Short Coffee push button.
 // If we put that to high it make a short coffee: obvious man being obvious here.
-int PIN_MAKE_SHORT = 2;
+int PIN_MAKE_SHORT = 3;
 // Wired to the Senseo Long Coffee push button.
-int PIN_MAKE_LONG = 3;
+int PIN_MAKE_LONG = 4;
 // Wired to the RPi, so it can order a short coffee.
-int PIN_ORDER_SHORT = 4;
+int PIN_ORDER_SHORT = 5;
 // Wired to the RPi, so it can order a short coffee.
-int PIN_ORDER_LONG = 5;
+int PIN_ORDER_LONG = 6;
 int is_short_ordered;
 int is_long_ordered;
 
@@ -59,3 +59,4 @@ void loop() {
     delay(30000);
   }
 }
+
