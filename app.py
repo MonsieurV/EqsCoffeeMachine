@@ -48,10 +48,8 @@ print('Listening to Slack...')
 try:
 	while True:
 		notifications = slack.rtm_read()
-		# [{u'text': u'coin', u'ts': u'1458399795.000050', u'user': u'U03RVKZTA',
-		# u'team': u'T03228R4X', u'type': u'message', u'channel': u'C0Q2FPFQD'}]
 		for notification in notifications:
-			if notification['type'] != 'message' and not 'text' in notification:
+			if notification['type'] != 'message' or not 'text' in notification:
 				continue
 			print(notification)
 			message = notification['text'].lower()
