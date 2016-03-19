@@ -1,5 +1,7 @@
 venv
 token.py
+log.txt
+run.pid
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
