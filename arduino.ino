@@ -1,40 +1,61 @@
 /**
- * Senseo coffee maker by Equisense
+ * Senseo coffee maker by Equisense.
+ *
+ * By Kamel Tighidet <kamel@equisense.fr>
+ * and Yoan Tournade <yoan@ytotech.com>
  */
- 
-int power_out_pin, short_coffee_out_pin, long_coffee_out_pin, short_coffee_in_pin, long_coffee_in_pin, short_coffee_in, long_coffee_in, push_delay;
+
+// We set the push delay
+// (delay between the high and low signal to simulate a push button action).
+int PUSH_BTN_DELAY = 100;
+// Wired to the Senseo Power push button. 
+int PIN_POWER = 1;
+// Wired to the Senseo Short Coffee push button.
+// If we put that to high it make a short coffee: obvious man being obvious here.
+int PIN_MAKE_SHORT = 2;
+// Wired to the Senseo Long Coffee push button.
+int PIN_MAKE_LONG = 3;
+// Wired to the RPi, so it can order a short coffee.
+int PIN_ORDER_SHORT = 4;
+// Wired to the RPi, so it can order a short coffee.
+int PIN_ORDER_LONG = 5;
+int is_short_ordered;
+int is_long_ordered;
+
 void setup() {
-  // We set the push delay (delay between the high and low signal)
-  push_delay = 100;
-  // We set the pins positions
-  power_out_pin = 1;
-  short_coffee_out_pin  = 2;
-  long_coffee_out_pin = 3;
-  short_coffee_in_pin = 4;
-  long_coffee_in_pin = 5;
-  // We init the values of the inputs
-  short_coffee_in = 0;
-  long_coffee_in = 0;
+  Serial.begin(9600);
   // We init the in/out pins
-  pinMode(power_out_pin, OUTPUT);
-  pinMode(short_coffee_out_pin, OUTPUT);
-  pinMode(long_coffee_out_pin, OUTPUT);
-  pinMode(short_coffee_in_pin, INPUT);
-  pinMode(long_coffee_in_pin, INPUT);
+  pinMode(PIN_POWER, OUTPUT);
+  digitalWrite(PIN_POWER, LOW);
+  pinMode(PIN_MAKE_SHORT, OUTPUT);
+  digitalWrite(PIN_MAKE_SHORT, LOW);
+  pinMode(PIN_MAKE_LONG, OUTPUT);
+  digitalWrite(PIN_MAKE_LONG, LOW);
+  pinMode(PIN_ORDER_SHORT, INPUT);
+  pinMode(PIN_ORDER_LONG, INPUT);
 }
 
 void loop() {
-  short_coffee_in = digitalRead(short_coffee_in_pin);
-  long_coffee_in = digitalRead(long_coffee_in_pin);
-  if(short_coffee_in || long_coffee_in){
-    digitalWrite(power_out_pin, HIGH); 
-    delay(push_delay);              // wait for a second
-    digitalWrite(power_out_pin, LOW);
-    delay(10000);              // wait for 10 seconds
-    digitalWrite(short_coffee_out_pin, short_coffee_in);
-    digitalWrite(long_coffee_out_pin, long_coffee_in);
-    delay(push_delay);
-    digitalWrite(short_coffee_out_pin, LOW);
-    digitalWrite(long_coffee_out_pin, LOW);
+  is_short_ordered = digitalRead(PIN_ORDER_SHORT);
+  is_long_ordered = digitalRead(PIN_ORDER_LONG);
+  if(is_short_ordered || is_long_ordered) {
+    Serial.println("Powering the Senseo machine");
+    digitalWrite(PIN_POWER, HIGH); 
+    delay(PUSH_BTN_DELAY);
+    digitalWrite(PIN_POWER, LOW);
+    delay(10000);
+    if(is_short_ordered) {
+      Serial.println("Start a short coffee");
+      digitalWrite(PIN_MAKE_SHORT, HIGH);
+      delay(PUSH_BTN_DELAY);
+      digitalWrite(PIN_MAKE_SHORT, LOW);
+    } else {
+      Serial.println("Start a long coffeee");
+      digitalWrite(PIN_MAKE_LONG, HIGH);
+      delay(PUSH_BTN_DELAY);
+      digitalWrite(PIN_MAKE_LONG, LOW);
+    }
+    Serial.println("Wait for the coffee to be ready");
+    delay(30000);
   }
 }
