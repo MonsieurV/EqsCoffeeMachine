@@ -26,11 +26,11 @@ void setup() {
   Serial.begin(9600);
   // We init the in/out pins
   pinMode(PIN_POWER, OUTPUT);
-  digitalWrite(PIN_POWER, LOW);
+  digitalWrite(PIN_POWER, HIGH);
   pinMode(PIN_MAKE_SHORT, OUTPUT);
-  digitalWrite(PIN_MAKE_SHORT, LOW);
+  digitalWrite(PIN_MAKE_SHORT, HIGH);
   pinMode(PIN_MAKE_LONG, OUTPUT);
-  digitalWrite(PIN_MAKE_LONG, LOW);
+  digitalWrite(PIN_MAKE_LONG, HIGH);
   pinMode(PIN_ORDER_SHORT, INPUT);
   pinMode(PIN_ORDER_LONG, INPUT);
 }
@@ -40,20 +40,20 @@ void loop() {
   is_long_ordered = digitalRead(PIN_ORDER_LONG);
   if(is_short_ordered || is_long_ordered) {
     Serial.println("Powering the Senseo machine");
-    digitalWrite(PIN_POWER, HIGH); 
+    digitalWrite(PIN_POWER, LOW); 
     delay(PUSH_BTN_DELAY);
-    digitalWrite(PIN_POWER, LOW);
+    digitalWrite(PIN_POWER, HIGH);
     delay(10000);
     if(is_short_ordered) {
       Serial.println("Start a short coffee");
-      digitalWrite(PIN_MAKE_SHORT, HIGH);
-      delay(PUSH_BTN_DELAY);
       digitalWrite(PIN_MAKE_SHORT, LOW);
+      delay(PUSH_BTN_DELAY);
+      digitalWrite(PIN_MAKE_SHORT, HIGH);
     } else {
       Serial.println("Start a long coffeee");
-      digitalWrite(PIN_MAKE_LONG, HIGH);
-      delay(PUSH_BTN_DELAY);
       digitalWrite(PIN_MAKE_LONG, LOW);
+      delay(PUSH_BTN_DELAY);
+      digitalWrite(PIN_MAKE_LONG, HIGH);
     }
     Serial.println("Wait for the coffee to be ready");
     delay(30000);
