@@ -21,8 +21,13 @@ int LED_PIN = A0;
 int PIN_ORDER_SHORT = 5;
 // Wired to the RPi, so it can order a short coffee.
 int PIN_ORDER_LONG = 6;
+// Wired to the moisture sensor (to sense the water level).
+int PIN_MOISTURE_SENSOR = 7;
+// Wired the the relay (to activate the water pump).
+int PIN_WATER_PUMP_RELAY = 8;
 int is_short_ordered;
 int is_long_ordered;
+int is_tank_full;
 int i;
 long sum;
 
@@ -37,12 +42,20 @@ void setup() {
   digitalWrite(PIN_MAKE_LONG, HIGH);
   pinMode(PIN_ORDER_SHORT, INPUT);
   pinMode(PIN_ORDER_LONG, INPUT);
+  pinMode(PIN_WATER_PUMP_RELAY, OUTPUT);
+  pinMode(PIN_MOISTURE_SENSOR, INPUT);
 }
 
 void loop() {
+  is_tank_full = digitalRead(PIN_MOISTURE_SENSOR);
+  Serial.println(is_tank_full);
+  // If the tank is not full, activate the water pump.
+  digitalWrite(PIN_WATER_PUMP_RELAY, !is_tank_full);
   is_short_ordered = digitalRead(PIN_ORDER_SHORT);
   is_long_ordered = digitalRead(PIN_ORDER_LONG);
   if(is_short_ordered || is_long_ordered) {
+    // Always disable water pomp when preparing a coffee.
+    digitalWrite(PIN_WATER_PUMP_RELAY, LOW);
     Serial.println("Check if the Senseo machine is on");
     sum = 0;
     for(i = 0; i < 100; i++) {
