@@ -8,12 +8,14 @@ By Yoan Tournade <yoan@ytotech.com>
 """
 import time
 from slackclient import SlackClient
+# Add your Slack API token in a token.py file:
+# SLACK_TOKEN = 'YOUR_SLACK_API_TOKEN'
+from token import SLACK_TOKEN
 
-SLACK_TOKEN = 'xoxp-3070297167-3879679928-27980816180-4db831a2a0'
 USER_COFFEE = '@uslackbot'
-CMD_COFFEE = 'coffee'
-COFFEE_SHORT = 'short'
-COFFEE_LONG = 'long'
+CMD_COFFEE = ['coffee', u'café', 'court', 'short', 'long']
+COFFEE_SHORT = ['short', 'court']
+COFFEE_LONG = ['long']
 
 slack = SlackClient(SLACK_TOKEN)
 if not slack.rtm_connect():
@@ -25,6 +27,12 @@ def talk(message, channel='#hackathon_eqs'):
 		username='Eqs Coffee Machine', icon_emoji=':coffee:'
 	)
 
+def isShort(message):
+	return any(a in message for a in COFFEE_SHORT)
+
+def isLong(message):
+	return any(a in message for a in COFFEE_LONG)
+
 print('Listening to Slack...')
 while True:
 	notifications = slack.rtm_read()
@@ -35,12 +43,12 @@ while True:
 			continue
 		print(notification)
 		message = notification['text'].lower()
-		if not USER_COFFEE in message or not CMD_COFFEE in message:
+		if not USER_COFFEE in message or not any(a in message for a in CMD_COFFEE):
 			continue
-		if not COFFEE_LONG in message and not COFFEE_SHORT in message:
+		if not isShort(message) and not isLong(message):
 			talk('Here I am! Which kind of coffee do you want?')
-		if COFFEE_SHORT in message:
-			talk('Short coffee ordered!')
-		if COFFEE_LONG in message:
-			talk('A long coffee for a long day!')
+		if isShort(message):
+			talk('One short coffee ordered!')
+		if isLong(message):
+			talk('A long coffee for a long day: that\'s on the way!')
 	time.sleep(1)
