@@ -43,7 +43,7 @@ void loop() {
     digitalWrite(PIN_POWER, LOW); 
     delay(PUSH_BTN_DELAY);
     digitalWrite(PIN_POWER, HIGH);
-    delay(10000);
+    delay(40000);
     if(is_short_ordered) {
       Serial.println("Start a short coffee");
       digitalWrite(PIN_MAKE_SHORT, LOW);
@@ -57,6 +57,9 @@ void loop() {
     }
     Serial.println("Wait for the coffee to be ready");
     delay(30000);
+    Serial.println("Shut down");
+    digitalWrite(PIN_POWER, LOW); 
+    delay(PUSH_BTN_DELAY);
+    digitalWrite(PIN_POWER, HIGH);
   }
 }
-
