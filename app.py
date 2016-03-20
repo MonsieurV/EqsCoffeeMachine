@@ -126,24 +126,25 @@ try:
 			if not USER_COFFEE in message or 'user' not in notification:
 				continue
 			print(notification)
-			user = slack.api_call(
-				"users.info", user=notification['user']
-			).get('user')
-			if not any(a in message for a in CMD_COFFEE):
-				talk('Yes @{0}, Can I help you?'.format(user['name']))
+			user = slack.api_call('users.info', user=notification['user']).get('user')
+			if not any(a in message.replace(USER_COFFEE, '') for a in CMD_COFFEE):
+				talk('Yes @{0}, Can I help you?'.format(user['name']),
+					channel=notification['channel'])
 				continue
 			if not isShortInMessage(message) and not isLongInMessage(message):
 				talk('Here I am! Which kind of coffee do you want @{0}?'
-					.format(user['name']))
+					.format(user['name']), channel=notification['channel'])
 				continue
 			isShort = isShortInMessage(message)
 			if isShort:
-				talk('One short coffee ordered!')
+				talk('One short coffee ordered!', channel=notification['channel'])
 			else:
-				talk('A long coffee for a long day: that\'s on the way!')
+				talk('A long coffee for a long day: that\'s on the way!',
+					channel=notification['channel'])
 			# Start the coffee making sequence.
 			if getSenseoState() == 'default':
-				talk('Problem Ouston! Where\'s the water?')
+				talk('Problem Ouston! Where\'s the water?',
+					channel=notification['channel'])
 				continue
 			if getSenseoState() == 'off':
 				print('Powering the Senseo machine')
@@ -154,21 +155,23 @@ try:
 				if getSenseoState() == 'ready':
 					break
 				if getSenseoState() == 'default':
-					talk('Problem Ouston! Where\'s the water?')
+					talk('Problem Ouston! Where\'s the water?',
+						channel=notification['channel'])
 					continue
 			if state != 'ready':
-				talk('Arg! I\'m dying! Help me!')
+				talk('Arg! I\'m dying! Help me!',
+					channel=notification['channel'])
 				continue
 			makeCoffee(isShort)
 			print('Wait for the coffee to be ready')
 			if isShort:
 				time.sleep(22)
 				talk("Your short coffee is ready @{0}. Short but strong, enjoy it!"
-					.format(user['name']))
+					.format(user['name']), channel=notification['channel'])
 			else:
 				time.sleep(40)
 				talk("Your long coffee is ready @{0}. As long as your d**k, enjoy it!"
-					.format(user['name']))
+					.format(user['name']), channel=notification['channel'])
 			print('Shut down the Senseo machine')
 			powerSenseo()
 		# If the tank is not full, activate the water pump.
