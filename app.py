@@ -132,7 +132,7 @@ try:
 			if not any(a in message for a in CMD_COFFEE):
 				talk('Yes @{0}, Can I help you?'.format(user['name']))
 				continue
-			if not isShortInMessage(message) and not isShortInMessage(message):
+			if not isShortInMessage(message) and not isLongInMessage(message):
 				talk('Here I am! Which kind of coffee do you want @{0}?'
 					.format(user['name']))
 				continue
