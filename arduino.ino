@@ -47,8 +47,7 @@ void setup() {
 }
 
 void loop() {
-  is_tank_full = digitalRead(PIN_MOISTURE_SENSOR);
-  Serial.println(is_tank_full);
+  is_tank_full = !digitalRead(PIN_MOISTURE_SENSOR);
   // If the tank is not full, activate the water pump.
   digitalWrite(PIN_WATER_PUMP_RELAY, !is_tank_full);
   is_short_ordered = digitalRead(PIN_ORDER_SHORT);
