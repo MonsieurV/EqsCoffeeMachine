@@ -102,7 +102,6 @@ def getSenseoState():
 	else:
 		return 'heating'
 
-print(getSenseoState())
 # Connect to Slack.
 slack = SlackClient(SLACK_TOKEN)
 if not slack.rtm_connect():
@@ -153,16 +152,22 @@ try:
 				state = getSenseoState()
 				if getSenseoState() == 'ready':
 					break
+				if getSenseoState() == 'default':
+					talk('Problem Ouston! Where\'s the water?')
+					continue
 			if state != 'ready':
 				talk('Arg! I\'m dying! Help me!')
 				continue
 			makeCoffee(isShort)
 			print('Wait for the coffee to be ready')
-			time.sleep(40)
+			if isShort:
+				time.sleep(22)
+			else:
+				time.sleep(40)
 			print('Shut down the Senseo machine')
 			powerSenseo()
 		# If the tank is not full, activate the water pump.
-		GPIO.output(PIN_WATER_PUMP, not GPIO.input(PIN_MOISTURE_SENSOR))
+		GPIO.output(PIN_WATER_PUMP, GPIO.input(PIN_MOISTURE_SENSOR))
 		time.sleep(1)
 finally:
 	GPIO.output(PIN_WATER_PUMP, GPIO.LOW)
