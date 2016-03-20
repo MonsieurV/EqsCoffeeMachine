@@ -53,20 +53,25 @@ try:
 				continue
 			print(notification)
 			message = notification['text'].lower()
+			user = slack.api_call(
+				"users.info", user=notification['user']
+			)
 			if not USER_COFFEE in message or not any(a in message for a in CMD_COFFEE):
 				continue
 			if not isShort(message) and not isLong(message):
-				talk('Here I am! Which kind of coffee do you want?')
+				talk('Here I am! Which kind of coffee do you want @'+ user['user']['name']+'?')
 			if isShort(message):
 				talk('One short coffee ordered!')
 				GPIO.output(PIN_SHORT, GPIO.HIGH)
 				time.sleep(1)
 				GPIO.output(PIN_SHORT, GPIO.LOW)
+				talk("Your short coffee is ready @" + user['user']['name'] + ". Short but strong, enjoy it!")
 			if isLong(message):
 				talk('A long coffee for a long day: that\'s on the way!')
 				GPIO.output(PIN_LONG, GPIO.HIGH)
 				time.sleep(1)
 				GPIO.output(PIN_LONG, GPIO.LOW)
+				talk("Your long coffee is ready @" + user['user']['name'] + ". As long as your d**k, enjoy it!")
 		time.sleep(1)
 finally:
 	GPIO.cleanup()
