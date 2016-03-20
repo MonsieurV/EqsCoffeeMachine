@@ -5,6 +5,7 @@ Control Equisense Coffee Machine from Slack.
 
 Released under MIT License. See LICENSE file.
 By Yoan Tournade <yoan@ytotech.com>
+and Cyril Fougeray <cyril.fougeray@gmail.com>
 """
 import time
 from slackclient import SlackClient
@@ -75,14 +76,7 @@ def getSenseoState():
 	- heating
 	- default
 	- off"""
-	# Sample the LED output on 4 seconds.
-	# sumLeds = 0
-	# for i in range(0, 4000):
-	# 	sumLeds = sumLeds + GPIO.input(PIN_LED_SENSEO)
-	# 	time.sleep(0.001)
-	# print('LEDs: ' + str(sumLeds))
-
-	# Read for 2 seconds.
+	# Sample the LED output on 3 seconds.
 	sumLeds = 0
 	lastState = GPIO.input(PIN_LED_SENSEO)
 	sumStateChange = 0
@@ -126,14 +120,21 @@ try:
 		GPIO.output(PIN_WATER_PUMP, GPIO.LOW)
 		notifications = slack.rtm_read()
 		for notification in notifications:
-			if notification['type'] != 'message' or not 'text' in notification:
+			if notification['type'] != 'message' or 'text' not in notification:
+				continue
+			message = notification['text'].lower()
+			if not USER_COFFEE in message and 'user' not in notification:
 				continue
 			print(notification)
-			message = notification['text'].lower()
-			if not USER_COFFEE in message or not any(a in message for a in CMD_COFFEE):
+			user = slack.api_call(
+				"users.info", user=notification['user']
+			).get('user')
+			if not any(a in message for a in CMD_COFFEE):
+				talk('Yes @{0}, Can I help you?'.format(user['name']))
 				continue
-			if not isShortInMessage(message) and not isLongInMessage(message):
-				talk('Here I am! Which kind of coffee do you want?')
+			if not isShortInMessage(message) and not isShortInMessage(message):
+				talk('Here I am! Which kind of coffee do you want @{0}?'
+					.format(user['name']))
 				continue
 			isShort = isShortInMessage(message)
 			if isShort:
@@ -162,8 +163,12 @@ try:
 			print('Wait for the coffee to be ready')
 			if isShort:
 				time.sleep(22)
+				talk("Your short coffee is ready @{0}. Short but strong, enjoy it!"
+					.format(user['name']))
 			else:
 				time.sleep(40)
+				talk("Your long coffee is ready @{0}. As long as your d**k, enjoy it!"
+					.format(user['name']))
 			print('Shut down the Senseo machine')
 			powerSenseo()
 		# If the tank is not full, activate the water pump.
