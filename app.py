@@ -123,7 +123,7 @@ try:
 			if notification['type'] != 'message' or 'text' not in notification:
 				continue
 			message = notification['text'].lower()
-			if not USER_COFFEE in message and 'user' not in notification:
+			if not USER_COFFEE in message or 'user' not in notification:
 				continue
 			print(notification)
 			user = slack.api_call(
