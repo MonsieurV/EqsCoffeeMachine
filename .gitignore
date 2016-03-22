@@ -3,6 +3,7 @@ token.py
 log.txt
 run.pid
 processed.json
+stats.json
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
