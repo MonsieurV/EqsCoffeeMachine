@@ -16,12 +16,20 @@ except RuntimeError:
 # Add your Slack API token in a token.py file:
 # SLACK_TOKEN = 'YOUR_SLACK_API_TOKEN'
 from token import SLACK_TOKEN
+import json
 
 # User experience constants.
 USER_COFFEE = '@coffee'
 CMD_COFFEE = ['coffee', u'café', 'court', 'short', 'long']
 COFFEE_SHORT = ['short', 'court']
 COFFEE_LONG = ['long']
+FILE_PROCESSED = 'processed.json'
+PROCESSED_MESSAGES = []
+try:
+	with open(FILE_PROCESSED) as f:
+		PROCESSED_MESSAGES = json.load(f)
+except IOError:
+	pass
 # Pin setup constants.
 # Push delay to simulate a push button action.
 PUSH_BTN_DELAY = 0.5
@@ -113,6 +121,11 @@ def isShortInMessage(message):
 def isLongInMessage(message):
 	return any(a in message for a in COFFEE_LONG)
 
+def setMessageAsProcessed(messageId):
+	PROCESSED_MESSAGES.append(messageId)
+	with open(FILE_PROCESSED, 'wb') as f:
+		json.dump(PROCESSED_MESSAGES, f)
+
 print('Listening to Slack...')
 try:
 	while True:
@@ -126,6 +139,10 @@ try:
 			if not USER_COFFEE in message or 'user' not in notification:
 				continue
 			print(notification)
+			if notification['ts'] in PROCESSED_MESSAGES:
+				print('Already processed, ignore')
+				continue
+			setMessageAsProcessed(notification['ts'])
 			user = slack.api_call('users.info', user=notification['user']).get('user')
 			if not any(a in message.replace(USER_COFFEE, '') for a in CMD_COFFEE):
 				talk('Yes @{0}, Can I help you?'.format(user['name']),
@@ -150,14 +167,20 @@ try:
 				print('Powering the Senseo machine')
 				powerSenseo()
 			print('Wait for the machine to be ready')
+			hasError = False
 			for i in range(0, 15):
 				state = getSenseoState()
 				if getSenseoState() == 'ready':
 					break
 				if getSenseoState() == 'default':
-					talk('Problem Ouston! Where\'s the water?',
-						channel=notification['channel'])
-					continue
+					# Double check.
+					if getSenseoState() == 'default':
+						talk('Problem Ouston! Where\'s the water?',
+							channel=notification['channel'])
+						hasError = True
+						break
+			if hasError:
+				continue
 			if state != 'ready':
 				talk('Arg! I\'m dying! Help me!',
 					channel=notification['channel'])

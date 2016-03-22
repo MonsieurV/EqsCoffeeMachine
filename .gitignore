@@ -2,6 +2,7 @@ venv
 token.py
 log.txt
 run.pid
+processed.json
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
