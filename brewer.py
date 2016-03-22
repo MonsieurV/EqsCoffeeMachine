@@ -70,4 +70,3 @@ class Brewer(threading.Thread):
 			Chat.addCoffeeForUser(self.user['name'], 'long', channel=self.channel)
 		print('Shut down the Senseo machine')
 		Senseo.powerSenseo()
-		print "Do something"

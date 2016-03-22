@@ -20,13 +20,13 @@ import time
 from senseo import Senseo
 from brewer import Brewer
 from chat import Chat
+from tank import Tank
 brewer = None
+tank = None
 
 print('Listening to Slack...')
 try:
 	while True:
-		# Turn off water pomp.
-		Senseo.disablePump()
 		for notification in Chat.getNotifications():
 			Chat.processNotification(notification)
 		while True:
@@ -42,9 +42,10 @@ try:
 			brewer = Brewer(action['isShort'], action['notification']['channel'],
 				action['user'])
 			brewer.start()
-		# If the tank is not full, activate the water pump.
-		if not Senseo.isTankFull():
-			Senseo.enablePump()
+		if not tank or not tank.isAlive():
+			# Spam a tank check process.
+			tank = Tank()
+			tank.start()
 		time.sleep(0.5)
 finally:
 	Senseo.disablePump()
