@@ -6,6 +6,14 @@ Control Equisense Coffee Machine from Slack.
 Released under MIT License. See LICENSE file.
 By Yoan Tournade <yoan@ytotech.com>
 and Cyril Fougeray <cyril.fougeray@gmail.com>
+
+TODO
+* Get friendly state of machine from Slack
+  Ask a person after it have made a coffee if the machine is ready
+  for the next coffee (mug + pod)
+* Get technical state of machine from Slack: ready, default, heating
+* Fill tank 60 seconds after a default
+* If there are 2 succesive default throw an alert: "No more water?"
 """
 import time
 from slackclient import SlackClient
@@ -168,7 +176,7 @@ try:
 				powerSenseo()
 			print('Wait for the machine to be ready')
 			hasError = False
-			for i in range(0, 15):
+			for i in range(0, 20):
 				state = getSenseoState()
 				if getSenseoState() == 'ready':
 					break
@@ -182,6 +190,7 @@ try:
 			if hasError:
 				continue
 			if state != 'ready':
+				print(state)
 				talk('Arg! I\'m dying! Help me!',
 					channel=notification['channel'])
 				continue
@@ -189,7 +198,7 @@ try:
 			print('Wait for the coffee to be ready')
 			if isShort:
 				time.sleep(22)
-				talk("Your short coffee is ready @{0}. Short but strong, enjoy it!"
+				talk("Your coffee is ready @{0}. :coffee: Short but strong, enjoy it!"
 					.format(user['name']), channel=notification['channel'])
 			else:
 				time.sleep(40)
