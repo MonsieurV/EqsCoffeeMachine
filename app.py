@@ -55,6 +55,8 @@ PIN_MOISTURE_SENSOR = 24
 # Wired to the relay for the water pump.
 PIN_WATER_PUMP = 25
 
+coffee_counter = {}
+
 # Init GPIO.
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(PIN_POWER_SENSEO, GPIO.OUT)
@@ -129,6 +131,18 @@ def isShortInMessage(message):
 def isLongInMessage(message):
 	return any(a in message for a in COFFEE_LONG)
 
+def addCoffeeForUser(user, short_long):
+	if user not in coffee_counter:
+		coffee_counter[user] = {}
+		coffee_counter[user]['short'] = 0
+		coffee_counter[user]['long'] = 0
+		talk("First coffee for @" + user + "! Thumbs up from the HackEQS team! :+1:")
+
+	coffee_counter[user][short_long] = coffee_counter[user][short_long] + 1
+
+	if coffee_counter[user][short_long] % 10 == 0:
+		talk("Woow, that's your " + coffee_counter[user][short_long] + "th " + short_long + " coffee!")
+
 def setMessageAsProcessed(messageId):
 	PROCESSED_MESSAGES.append(messageId)
 	with open(FILE_PROCESSED, 'wb') as f:
@@ -163,9 +177,11 @@ try:
 			isShort = isShortInMessage(message)
 			if isShort:
 				talk('One short coffee ordered!', channel=notification['channel'])
+				addCoffeeForUser(user['name'], 'short')
 			else:
 				talk('A long coffee for a long day: that\'s on the way!',
 					channel=notification['channel'])
+				addCoffeeForUser(user['name'], 'long')
 			# Start the coffee making sequence.
 			if getSenseoState() == 'default':
 				talk('Problem Ouston! Where\'s the water?',
