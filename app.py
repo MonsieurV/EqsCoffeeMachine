@@ -139,7 +139,7 @@ def isShortInMessage(message):
 def isLongInMessage(message):
 	return any(a in message for a in COFFEE_LONG)
 
-def addCoffeeForUser(user, short_long):
+def addCoffeeForUser(user, short_long, channel='#hackathon_eqs'):
 	# Init the dict.
 	if 'short' not in COFFEE_STATS:
 		COFFEE_STATS['short'] = {}
@@ -152,13 +152,13 @@ def addCoffeeForUser(user, short_long):
 		COFFEE_STATS[user]['short'] = 0
 		COFFEE_STATS[user]['long'] = 0
 		talk("First coffee for @{0}! Thumbs up from the HackEQS team! :+1:"
-			.format(user))
+			.format(user), channel=channel)
 	# Update the dict.
 	COFFEE_STATS[short_long]['total'] = COFFEE_STATS[short_long]['total'] + 1
 	COFFEE_STATS[user][short_long] = COFFEE_STATS[user][short_long] + 1
 	if COFFEE_STATS[user][short_long] % 10 == 0:
 		talk("Woow, that's your {0}th {0} coffee!".
-			format(COFFEE_STATS[user][short_long], short_long))
+			format(COFFEE_STATS[user][short_long], short_long), channel=channel)
 	with open(FILE_STATS, 'wb') as f:
 		json.dump(COFFEE_STATS, f)
 
@@ -233,12 +233,12 @@ try:
 				time.sleep(22)
 				talk("Your coffee is ready @{0}. :coffee: Short but strong, enjoy it!"
 					.format(user['name']), channel=notification['channel'])
-				addCoffeeForUser(user['name'], 'short')
+				addCoffeeForUser(user['name'], 'short', channel=notification['channel'])
 			else:
 				time.sleep(40)
 				talk("Your long coffee is ready @{0}. Hope you'll like it!"
 					.format(user['name']), channel=notification['channel'])
-				addCoffeeForUser(user['name'], 'long')
+				addCoffeeForUser(user['name'], 'long', channel=notification['channel'])
 			print('Shut down the Senseo machine')
 			powerSenseo()
 		# If the tank is not full, activate the water pump.
