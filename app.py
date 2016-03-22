@@ -113,11 +113,13 @@ def getSenseoState():
 		time.sleep(0.001)
 	if sumLeds < 10:
 		return 'off'
-	if sumLeds > 2900:
+	if sumLeds > 2800:
 		return 'ready'
 	if sumStateChange > 20:
 		return 'default'
 	else:
+		print(sumStateChange)
+		print(sumLeds)
 		return 'heating'
 
 # Connect to Slack.
@@ -184,7 +186,7 @@ try:
 			setMessageAsProcessed(notification['ts'])
 			user = slack.api_call('users.info', user=notification['user']).get('user')
 			if not any(a in message.replace(USER_COFFEE, '') for a in CMD_COFFEE):
-				talk('Yes @{0}, Can I help you?'.format(user['name']),
+				talk('Yes @{0}, can I help you?'.format(user['name']),
 					channel=notification['channel'])
 				continue
 			if not isShortInMessage(message) and not isLongInMessage(message):
@@ -207,7 +209,7 @@ try:
 				powerSenseo()
 			print('Wait for the machine to be ready')
 			hasError = False
-			for i in range(0, 20):
+			for i in range(0, 25):
 				state = getSenseoState()
 				if getSenseoState() == 'ready':
 					break
@@ -234,7 +236,7 @@ try:
 				addCoffeeForUser(user['name'], 'short')
 			else:
 				time.sleep(40)
-				talk("Your long coffee is ready @{0}. As long as your d**k, enjoy it!"
+				talk("Your long coffee is ready @{0}. Hope you'll like it!"
 					.format(user['name']), channel=notification['channel'])
 				addCoffeeForUser(user['name'], 'long')
 			print('Shut down the Senseo machine')
