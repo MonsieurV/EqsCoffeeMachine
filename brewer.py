@@ -59,12 +59,12 @@ class Brewer(threading.Thread):
 		Senseo.makeCoffee(self.isShort)
 		print('Wait for the coffee to be ready')
 		if self.isShort:
-			time.sleep(22)
+			time.sleep(25)
 			Chat.talk("Your coffee is ready @{0}. :coffee: Short but strong, enjoy it!"
 				.format(self.user['name']), channel=self.channel)
 			Chat.addCoffeeForUser(self.user['name'], 'short', channel=self.channel)
 		else:
-			time.sleep(40)
+			time.sleep(42)
 			Chat.talk("Your long coffee is ready @{0}. Hope you'll like it!"
 				.format(self.user['name']), channel=self.channel)
 			Chat.addCoffeeForUser(self.user['name'], 'long', channel=self.channel)

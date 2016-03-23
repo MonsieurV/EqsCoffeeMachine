@@ -12,8 +12,6 @@ TODO
   Ask a person after it have made a coffee if the machine is ready
   for the next coffee (mug + pod)
 * Get technical state of machine from Slack: ready, default, heating
-* Fill tank 60 seconds after a default
-* If there are 2 succesive default throw an alert: "No more water?"
 * Produce a video of a typical day at Equisense with the Eqs Coffee Machine.
 """
 import time

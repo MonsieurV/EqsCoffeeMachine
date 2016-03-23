@@ -29,7 +29,7 @@ class Tank(threading.Thread):
 			# Pump for 60 seconds.
 			print('Pump for 60 seconds')
 			Senseo.enablePump()
-			time.sleep(60)
+			time.sleep(80)
 			print('End of pumping process')
 			Senseo.disablePump()
 			time.sleep(2)

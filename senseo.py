@@ -101,7 +101,7 @@ class Senseo(object):
 
 	@staticmethod
 	def disablePump():
-		GPIO.output(PIN_WATER_PUMP, GPIO.HIGH)
+		GPIO.output(PIN_WATER_PUMP, GPIO.LOW)
 
 	@staticmethod
 	def isTankFull():
