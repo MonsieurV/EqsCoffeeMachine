@@ -25,6 +25,7 @@ tank = None
 print('Listening to Slack...')
 try:
 	while True:
+		Chat.setIsBrewing(brewer and brewer.isAlive())
 		for notification in Chat.getNotifications():
 			Chat.processNotification(notification)
 		while True:
@@ -40,6 +41,7 @@ try:
 			brewer = Brewer(action['isShort'], action['notification']['channel'],
 				action['user'])
 			brewer.start()
+			Chat.setLastClient(action['user'])
 		if not tank or not tank.isAlive():
 			# Spam a tank check process.
 			tank = Tank()
