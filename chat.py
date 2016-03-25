@@ -67,7 +67,7 @@ class Chat(object):
 		COFFEE_STATS[short_long]['total'] = COFFEE_STATS[short_long]['total'] + 1
 		COFFEE_STATS[user][short_long] = COFFEE_STATS[user][short_long] + 1
 		if COFFEE_STATS[user][short_long] % 10 == 0:
-			Chat.talk("Woow, that's your {0}th {0} coffee!".
+			Chat.talk("Woow, that's your {0}th {1} coffee!".
 				format(COFFEE_STATS[user][short_long], short_long), channel=channel)
 		with open(FILE_STATS, 'wb') as f:
 			json.dump(COFFEE_STATS, f)
