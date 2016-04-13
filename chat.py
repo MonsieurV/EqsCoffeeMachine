@@ -12,14 +12,18 @@ from slackclient import SlackClient
 # SLACK_TOKEN = 'YOUR_SLACK_API_TOKEN'
 from token import SLACK_TOKEN
 import json
+import datetime
 
 # User experience constants.
 USER_COFFEE = '@coffee'
 CMD_COFFEE = ['coffee', u'café', 'court', 'short', 'long']
+CMD_DISABLE = ['disable', 'sleep']
+CMD_ENABLE = ['enable', 'wake_up']
 COFFEE_SHORT = ['short', 'court']
 COFFEE_LONG = ['long']
 FILE_PROCESSED = 'processed.json'
 PROCESSED_MESSAGES = []
+IS_DISABLED = False
 try:
 	with open(FILE_PROCESSED) as f:
 		PROCESSED_MESSAGES = json.load(f)
@@ -92,6 +96,7 @@ class Chat(object):
 
 	@staticmethod
 	def processNotification(notification):
+		global IS_DISABLED
 		if notification['type'] != 'message' or 'text' not in notification:
 			return
 		message = notification['text'].lower()
@@ -103,6 +108,23 @@ class Chat(object):
 			return
 		Chat.setMessageAsProcessed(notification['ts'])
 		user = slack.api_call('users.info', user=notification['user']).get('user')
+		if any(a in message for a in CMD_ENABLE):
+			print "enable"
+			IS_DISABLED = False
+			Chat.talk('Hey Hey Hey! I missed you so much!',
+				channel=notification['channel'])
+			return
+
+		if any(a in message for a in CMD_DISABLE):
+			IS_DISABLED = True
+			Chat.talk('Alright! I think it is time to sleep...',
+				channel=notification['channel'])
+			return
+
+		if datetime.datetime.today().weekday() > 5 or datetime.datetime.today().hour > 20 or datetime.datetime.today().hour < 8 or IS_DISABLED:
+			Chat.talk('I am on holiday :grin: Go ahead and prepare it by yourself!',
+				channel=notification['channel'])
+			return
 		if not any(a in message.replace(USER_COFFEE, '') for a in CMD_COFFEE):
 			Chat.talk('Yes @{0}, can I help you?'.format(user['name']),
 				channel=notification['channel'])
