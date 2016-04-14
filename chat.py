@@ -23,7 +23,7 @@ COFFEE_SHORT = ['short', 'court']
 COFFEE_LONG = ['long']
 FILE_PROCESSED = 'processed.json'
 PROCESSED_MESSAGES = []
-IS_DISABLED = False
+MANUALLY_DISABLED = False
 try:
 	with open(FILE_PROCESSED) as f:
 		PROCESSED_MESSAGES = json.load(f)
@@ -96,7 +96,7 @@ class Chat(object):
 
 	@staticmethod
 	def processNotification(notification):
-		global IS_DISABLED
+		global MANUALLY_DISABLED
 		if notification['type'] != 'message' or 'text' not in notification:
 			return
 		message = notification['text'].lower()
@@ -110,18 +110,18 @@ class Chat(object):
 		user = slack.api_call('users.info', user=notification['user']).get('user')
 		if any(a in message for a in CMD_ENABLE):
 			print "enable"
-			IS_DISABLED = False
+			MANUALLY_DISABLED = False
 			Chat.talk('Hey Hey Hey! I missed you so much!',
 				channel=notification['channel'])
 			return
 
 		if any(a in message for a in CMD_DISABLE):
-			IS_DISABLED = True
+			MANUALLY_DISABLED = True
 			Chat.talk('Alright! I think it is time to sleep...',
 				channel=notification['channel'])
 			return
 
-		if datetime.datetime.today().weekday() > 5 or datetime.datetime.today().hour > 20 or datetime.datetime.today().hour < 8 or IS_DISABLED:
+		if Chat.isDisabled():
 			Chat.talk('I am on holiday :grin: Go ahead and prepare it by yourself!',
 				channel=notification['channel'])
 			return
@@ -145,3 +145,7 @@ class Chat(object):
 		if len(actions) == 0:
 			return None
 		return actions.pop(0)
+
+	@staticmethod
+	def isDisabled():
+		return (MANUALLY_DISABLED or (datetime.datetime.today().hour>19) or (datetime.datetime.today().hour<8) or (datetime.datetime.today().weekday()>5))

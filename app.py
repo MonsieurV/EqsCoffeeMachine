@@ -6,6 +6,7 @@ Control Equisense Coffee Machine from Slack.
 Released under MIT License. See LICENSE file.
 By Yoan Tournade <yoan@ytotech.com>
 and Cyril Fougeray <cyril.fougeray@gmail.com>
+Updated by Kamel TIGHIDET <tighidet.kamel@gmail.com>
 
 TODO
 * Get friendly state of machine from Slack
@@ -40,7 +41,7 @@ try:
 			brewer = Brewer(action['isShort'], action['notification']['channel'],
 				action['user'])
 			brewer.start()
-		if not tank or not tank.isAlive():
+		if not tank or not tank.isAlive() and not Chat.isDisabled():
 			# Spam a tank check process.
 			tank = Tank()
 			tank.start()
